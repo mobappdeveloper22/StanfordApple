@@ -30,6 +30,7 @@ struct MatchMarkers : View {
             }
             printLog(text: "end")
         }
+        
     }
     
     func printLog(text : String) -> some View {
@@ -40,15 +41,21 @@ struct MatchMarkers : View {
     }
     
     func matchMarker(peg : Int) -> some View {
-        let exactCount: Int = matches.filter({ $0 == .exact }).count
-        let foundCount: Int = matches.filter({ $0 != .nomatch }).count
+//        let exactCount: Int = matches.filter({ $0 == .exact }).count
+//        let foundCount: Int = matches.filter({ $0 != .nomatch }).count
+
 //        let exactCount: Int = matches.count(where: { match in match == .exact })
 //        let foundCount: Int = matches.count(where: { match in match != .nomatch })
+
+        let exactCount: Int = matches.count { $0 == .exact }
+        let foundCount: Int = matches.count { $0 != .nomatch }
+
         print("matchMarker==peg==\(peg)==exactCount==\(exactCount)===foundCount==\(foundCount)")
         return Circle()
             .fill(exactCount > peg ? Color.primary : Color.clear)
             .strokeBorder(foundCount > peg ? Color.primary : Color.clear, lineWidth: 2).aspectRatio(1, contentMode: .fit)
     }
+    
 }
 
 #Preview {
