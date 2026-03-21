@@ -16,10 +16,13 @@ struct CodeBreakerView: View {
     var body: some View {
         VStack {
             view(for: game.masterCode)
+            Divider()
             ScrollView {
                 view(for: game.guess)
+                Divider()
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     view(for: game.attempts[index])
+                    Divider()
                 }
             }
         }.padding()
