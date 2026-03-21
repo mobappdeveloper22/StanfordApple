@@ -10,7 +10,9 @@ import SwiftUI
 struct CodeBreakerView: View {
     
     // MARK: Data owned by me
-    @State var game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black])
+    @State private var game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
+    
+    @State private var selection : Int = 0
     
     // MARK: - Body
     var body: some View {
@@ -18,12 +20,18 @@ struct CodeBreakerView: View {
             view(for: game.masterCode)
             Divider()
             ScrollView {
-                view(for: game.guess)
+                if (!game.isOver) {
+                    view(for: game.guess)
+                }
                 Divider()
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     view(for: game.attempts[index])
                     Divider()
                 }
+            }
+            PegChooser(choices: game.pegChoices) { peg in
+                game.setGuessPage(peg, at: selection)
+                selection = (selection + 1) % game.masterCode.pegs.count
             }
         }.padding()
         
@@ -33,28 +41,42 @@ struct CodeBreakerView: View {
         Button("Guess") {
             withAnimation{
                 game.attemptGuess()
+                selection = 0
             }
-        }.font(.system(size: 80))
-            .minimumScaleFactor(0.1)
+        }.font(.system(size: GuessButton.maximumFontSize))
+            .minimumScaleFactor(GuessButton.scaleFactor)
     }
     
     func view(for code : Code) -> some View {
         HStack {
-            ForEach(code.pegs.indices, id: \.self) { index in
-                PegView(peg: code.pegs[index])
-                    .onTapGesture {
-                        if (code.kind == .guess) {
-                            game.changeGuessPeg(at : index)
-                        }
-                    }
-            }
-            MatchMarkers(matches: code.matches)
+            CodeView(code : code, selection: $selection)
+            
+            Color.clear.aspectRatio(1, contentMode: .fit)
                 .overlay {
+                if let matches = code.matches {
+                    MatchMarkers(matches: matches)
+                } else {
                     if (code.kind == .guess) {
                         guessButton
                     }
                 }
+            }
         }
+    }
+    
+    struct GuessButton {
+        static let minimumFontSize : CGFloat = 5
+        static let maximumFontSize : CGFloat = 80
+        static let scaleFactor = minimumFontSize / maximumFontSize
+    }
+    
+
+    
+}
+
+extension Color {
+    static func gray(_ brightness : CGFloat) -> Color {
+        return Color(hue: 148/360, saturation: 0, brightness: brightness)
     }
 }
 
@@ -63,32 +85,3 @@ struct CodeBreakerView: View {
 #Preview {
     CodeBreakerView()
 }
-
-
-
-
-//
-//ZStack {
-//    
-//    VStack {
-//        Image(systemName: "globe").border(.blue, width : 1).foregroundStyle(.green)
-//        Text("greetings").border(.blue, width : 1).font(.largeTitle).foregroundStyle(.orange)
-//        Text("hala 1").border(.blue, width : 1)
-//        Text("hala 2").border(.blue, width : 1)
-//        Circle()
-//    }.padding()
-//        .border(.blue, width: 2)
-//    HStack {
-//        Image(systemName: "globe")
-//        Text("greetings")
-//    }.border(.blue, width: 2).hidden()
-//    
-//    VStack {
-//        Image(systemName: "globe")
-//        Text("greetings")
-//    }.border(.blue, width: 2).hidden()
-//    ZStack {
-//        Image(systemName: "globe")
-//        Text("greetings")
-//    }.border(.blue, width: 2).hidden()
-//}.hidden()

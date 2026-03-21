@@ -20,7 +20,6 @@ struct MatchMarkers : View {
     
     var body: some View {
         HStack {
-            printLog(text: "begining")
             VStack {
                 matchMarker(peg: 0)
                 matchMarker(peg: 1)
@@ -29,16 +28,8 @@ struct MatchMarkers : View {
                 matchMarker(peg: 2)
                 matchMarker(peg: 3)
             }
-            printLog(text: "end")
         }
         
-    }
-    
-    func printLog(text : String) -> some View {
-        EmptyView()
-            .onAppear {
-                print("matchMarker==\(text)==")
-            }
     }
     
     func matchMarker(peg : Int) -> some View {
@@ -51,7 +42,6 @@ struct MatchMarkers : View {
         let exactCount: Int = matches.count { $0 == .exact }
         let foundCount: Int = matches.count { $0 != .nomatch }
 
-        print("matchMarker==peg==\(peg)==exactCount==\(exactCount)===foundCount==\(foundCount)")
         return Circle()
             .fill(exactCount > peg ? Color.primary : Color.clear)
             .strokeBorder(foundCount > peg ? Color.primary : Color.clear, lineWidth: 2).aspectRatio(1, contentMode: .fit)
