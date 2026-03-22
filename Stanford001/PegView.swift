@@ -13,8 +13,8 @@ struct PegView: View {
     let peg: Peg
     
     // MARK: - Body
-    let pegShape = RoundedRectangle(cornerRadius: 10)
-//    let pegShape = Circle()
+//    let pegShape = RoundedRectangle(cornerRadius: 10)
+    let pegShape = Circle()
     
     var body: some View {
         pegShape
