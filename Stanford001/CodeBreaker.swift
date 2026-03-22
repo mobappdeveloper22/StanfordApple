@@ -41,15 +41,15 @@ struct CodeBreaker {
         guess.pegs[index] = peg
     }
     
-    mutating func changeGuessPeg(at index : Int) {
-        let existingPeg = guess.pegs[index]
-        if let indexOfExistingPegInPegChoices = pegChoices.firstIndex(of: existingPeg) {
-            let newPage = pegChoices[(indexOfExistingPegInPegChoices+1) % pegChoices.count]
-            guess.pegs[index] = newPage
-        } else {
-            guess.pegs[index] = pegChoices.first ?? Code.missingPeg
-        }
-    }
+//    mutating func changeGuessPeg(at index : Int) {
+//        let existingPeg = guess.pegs[index]
+//        if let indexOfExistingPegInPegChoices = pegChoices.firstIndex(of: existingPeg) {
+//            let newPage = pegChoices[(indexOfExistingPegInPegChoices+1) % pegChoices.count]
+//            guess.pegs[index] = newPage
+//        } else {
+//            guess.pegs[index] = pegChoices.first ?? Code.missingPeg
+//        }
+//    }
     
 }
 

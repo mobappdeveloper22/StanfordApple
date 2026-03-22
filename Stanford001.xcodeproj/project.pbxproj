@@ -6,7 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1824BACC2F703A8A00083C3C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1824BACB2F703A8A00083C3C /* .gitignore */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
+		1824BACB2F703A8A00083C3C /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		187F02822F64312600716A39 /* Stanford001.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Stanford001.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -32,6 +37,7 @@
 		187F02792F64312600716A39 = {
 			isa = PBXGroup;
 			children = (
+				1824BACB2F703A8A00083C3C /* .gitignore */,
 				187F02842F64312600716A39 /* Stanford001 */,
 				187F02832F64312600716A39 /* Products */,
 			);
@@ -109,6 +115,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1824BACC2F703A8A00083C3C /* .gitignore in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
