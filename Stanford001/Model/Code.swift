@@ -28,6 +28,7 @@ struct Code {
         for index in pegs.indices {
             pegs[index] = pegChoices.randomElement() ?? Code.missingPeg
         }
+        print(self)
     }
     
     var isHidden : Bool {
@@ -53,7 +54,7 @@ struct Code {
     func match(against otherCode : Code) -> [Match] {
         var pegsToMatch = otherCode.pegs
         
-        var backwardsExactMatches : [Match] = pegs.indices.reversed().map { index in
+        let backwardsExactMatches : [Match] = pegs.indices.reversed().map { index in
             if pegsToMatch.count > index, pegsToMatch[index] == pegs[index] {
                 pegsToMatch.remove(at: index)
                 return .exact

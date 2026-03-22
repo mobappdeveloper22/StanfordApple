@@ -17,6 +17,12 @@ struct CodeBreakerView: View {
     // MARK: - Body
     var body: some View {
         VStack {
+            Button("Restart") {
+                withAnimation(.restart) {
+                    game.restart()
+                    selection = 0
+                }
+            }
             CodeView(code: game.masterCode)
 //            CodeView(code: game.masterCode, selection: $selection) { EmptyView() }
 //            CodeView(code: game.masterCode, selection: $selection) { Text("0.03").font(.title) }
@@ -38,17 +44,27 @@ struct CodeBreakerView: View {
                     Divider()
                 }
             }
-            PegChooser(choices: game.pegChoices) { peg in
-                game.setGuessPage(peg, at: selection)
-                selection = (selection + 1) % game.masterCode.pegs.count
+            if (!game.isOver) {
+                PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
+                    .transition(.offset(x: 0, y: 200))
+//                    .transition(.move(edge: .bottom))
             }
+//            PegChooser(choices: game.pegChoices) { peg in
+//                changePegAtSelection(to: peg)
+//            }
         }.padding()
         
     }
     
+    func changePegAtSelection(to peg : Peg) {
+        game.setGuessPage(peg, at: selection)
+        selection = (selection + 1) % game.masterCode.pegs.count
+
+    }
+    
     var guessButton : some View {
         Button("Guess") {
-            withAnimation{
+            withAnimation(.guess) {
                 game.attemptGuess()
                 selection = 0
             }
@@ -62,8 +78,12 @@ struct CodeBreakerView: View {
         static let scaleFactor = minimumFontSize / maximumFontSize
     }
     
+}
 
-    
+extension Animation {
+    static let codeBreaker = Animation.easeInOut(duration: 3)
+    static let guess = Animation.codeBreaker
+    static let restart = Animation.codeBreaker
 }
 
 extension Color {

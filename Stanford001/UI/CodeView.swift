@@ -41,7 +41,13 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
                         }
                     }
                     .overlay {
-                        Selection.shape.foregroundStyle(code.isHidden ? Color.gray : .clear)
+                        Selection.shape
+                            .foregroundStyle(code.isHidden ? Color.gray : .clear)
+                            .transaction { transaction in
+                                if (code.isHidden) {
+                                    transaction.animation = nil
+                                }
+                            }
                     }
                     .onTapGesture {
                         if (code.kind == .guess) {
