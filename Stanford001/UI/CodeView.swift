@@ -15,7 +15,12 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
     // MARK: Data share by me
     @Binding var selection : Int
     
+    // MARK: Data (sort of) In Function
     @ViewBuilder let ancillaryView : () -> AncillaryView
+    
+    // MARK: Data Owned by Me
+    @Namespace private var selectionNamespace
+    
     
     init(
         code: Code,
@@ -35,10 +40,14 @@ struct CodeView<AncillaryView>: View where AncillaryView: View {
                 PegView(peg: code.pegs[index])
                     .padding(Selection.border)
                     .background {
-                        if selection == index, code.kind == .guess {
-                            Selection.shape
-                                .foregroundStyle(Selection.color)
+                        Group {
+                            if selection == index, code.kind == .guess {
+                                Selection.shape
+                                    .foregroundStyle(Selection.color)
+                                    .matchedGeometryEffect(id: "selection", in: selectionNamespace)
+                            }
                         }
+                        .animation(.selection, value: selection)
                     }
                     .overlay {
                         Selection.shape

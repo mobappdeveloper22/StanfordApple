@@ -19,17 +19,8 @@ struct CodeBreakerView: View {
     // MARK: - Body
     var body: some View {
         VStack {
-            Button("Restart") {
-                withAnimation(.restart) {
-                    restarting = true
-                } completion: {
-                    withAnimation(.restart) {
-                        game.restart()
-                        selection = 0
-                        restarting = false
-                    }
-                }
-            }
+            Button("Restart", systemImage: "arrow.circlepath", action: restart)
+
             VStack {
                 CodeView(code: game.masterCode)
 //                CodeView(code: game.masterCode, selection: $selection) { EmptyView() }
@@ -41,7 +32,7 @@ struct CodeBreakerView: View {
                 if (!game.isOver || restarting) {
                     VStack {
                         CodeView(code: game.guess, selection: $selection) {
-                            guessButton
+                            Button("Guess", action: guess).flexibalSystemFont()
                         }
                         Divider()
                     }
@@ -75,55 +66,35 @@ struct CodeBreakerView: View {
     func changePegAtSelection(to peg : Peg) {
         game.setGuessPage(peg, at: selection)
         selection = (selection + 1) % game.masterCode.pegs.count
-
     }
     
-    var guessButton : some View {
-        Button("Guess") {
-            withAnimation(.guess) {
-                game.attemptGuess()
+    func restart() {
+        withAnimation(.restart) {
+            restarting = true
+        } completion: {
+            withAnimation(.restart) {
+                game.restart()
                 selection = 0
-                hideMostRecentMarkers = true
-            } completion: {
-                withAnimation(.guess) {
-                    hideMostRecentMarkers = false
-                }
+                restarting = false
             }
-        }.font(.system(size: GuessButton.maximumFontSize))
-            .minimumScaleFactor(GuessButton.scaleFactor)
+        }
     }
     
-    struct GuessButton {
-        static let minimumFontSize : CGFloat = 5
-        static let maximumFontSize : CGFloat = 80
-        static let scaleFactor = minimumFontSize / maximumFontSize
-    }
-    
-}
-
-extension Animation {
-    static let codeBreaker = Animation.easeInOut(duration: 1)
-    static let guess = Animation.codeBreaker
-    static let restart = Animation.codeBreaker
-}
-
-extension AnyTransition {
-    static let pegChooser = AnyTransition.offset(x: 0, y: 200)
-    
-    static func attempt(_ isOver : Bool) -> AnyTransition {
-        AnyTransition.asymmetric(
-            insertion: isOver ? .opacity : .move(edge: .top),
-            removal: .move(edge: .trailing)
-        )
+    func guess() {
+        withAnimation(.guess) {
+            game.attemptGuess()
+            selection = 0
+            hideMostRecentMarkers = true
+        } completion: {
+            withAnimation(.guess) {
+                hideMostRecentMarkers = false
+            }
+        }
     }
     
 }
 
-extension Color {
-    static func gray(_ brightness : CGFloat) -> Color {
-        return Color(hue: 148/360, saturation: 0, brightness: brightness)
-    }
-}
+
 
 
 
