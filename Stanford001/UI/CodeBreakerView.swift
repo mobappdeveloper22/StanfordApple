@@ -30,23 +30,27 @@ struct CodeBreakerView: View {
             Divider()
             ScrollView {
                 if (!game.isOver) {
-                    CodeView(code: game.guess, selection: $selection) {
-                        guessButton
-                    }
-                }
-                Divider()
-                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
-                    CodeView(code: game.attempts[index]) {
-                        if let matches = game.attempts[index].matches {
-                            MatchMarkers(matches: matches)
+                    VStack {
+                        CodeView(code: game.guess, selection: $selection) {
+                            guessButton
                         }
-                    }
-                    Divider()
+                        Divider()
+                    }.animation(nil, value: game.attempts.count)
+                }
+                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
+                    VStack {
+                        CodeView(code: game.attempts[index]) {
+                            if let matches = game.attempts[index].matches {
+                                MatchMarkers(matches: matches)
+                            }
+                        }
+                        Divider()
+                    }.transition(.attempt(game.isOver))
                 }
             }
             if (!game.isOver) {
                 PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
-                    .transition(.offset(x: 0, y: 200))
+                    .transition(.pegChooser)
 //                    .transition(.move(edge: .bottom))
             }
 //            PegChooser(choices: game.pegChoices) { peg in
@@ -81,9 +85,21 @@ struct CodeBreakerView: View {
 }
 
 extension Animation {
-    static let codeBreaker = Animation.easeInOut(duration: 3)
+    static let codeBreaker = Animation.easeInOut(duration: 1)
     static let guess = Animation.codeBreaker
     static let restart = Animation.codeBreaker
+}
+
+extension AnyTransition {
+    static let pegChooser = AnyTransition.offset(x: 0, y: 200)
+    
+    static func attempt(_ isOver : Bool) -> AnyTransition {
+        AnyTransition.asymmetric(
+            insertion: isOver ? .opacity : .move(edge: .top),
+            removal: .move(edge: .trailing)
+        )
+    }
+    
 }
 
 extension Color {
