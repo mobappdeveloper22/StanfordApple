@@ -14,6 +14,7 @@ struct CodeBreakerView: View {
     
     @State private var selection : Int = 0
     @State private var restarting : Bool = false
+    @State private var hideMostRecentMarkers : Bool = false
     
     // MARK: - Body
     var body: some View {
@@ -50,7 +51,8 @@ struct CodeBreakerView: View {
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     VStack {
                         CodeView(code: game.attempts[index]) {
-                            if let matches = game.attempts[index].matches {
+                            let showMarkers = !hideMostRecentMarkers || index != (game.attempts.count - 1)
+                            if showMarkers, let matches = game.attempts[index].matches {
                                 MatchMarkers(matches: matches)
                             }
                         }
@@ -81,6 +83,11 @@ struct CodeBreakerView: View {
             withAnimation(.guess) {
                 game.attemptGuess()
                 selection = 0
+                hideMostRecentMarkers = true
+            } completion: {
+                withAnimation(.guess) {
+                    hideMostRecentMarkers = false
+                }
             }
         }.font(.system(size: GuessButton.maximumFontSize))
             .minimumScaleFactor(GuessButton.scaleFactor)
