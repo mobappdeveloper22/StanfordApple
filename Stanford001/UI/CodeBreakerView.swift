@@ -13,29 +13,39 @@ struct CodeBreakerView: View {
     @State private var game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
     
     @State private var selection : Int = 0
+    @State private var restarting : Bool = false
     
     // MARK: - Body
     var body: some View {
         VStack {
             Button("Restart") {
                 withAnimation(.restart) {
-                    game.restart()
-                    selection = 0
+                    restarting = true
+                } completion: {
+                    withAnimation(.restart) {
+                        game.restart()
+                        selection = 0
+                        restarting = false
+                    }
                 }
             }
-            CodeView(code: game.masterCode)
-//            CodeView(code: game.masterCode, selection: $selection) { EmptyView() }
-//            CodeView(code: game.masterCode, selection: $selection) { Text("0.03").font(.title) }
-//            CodeView(code: game.masterCode, selection: $selection, ancillaryView:  { EmptyView() })
-            Divider()
+            VStack {
+                CodeView(code: game.masterCode)
+//                CodeView(code: game.masterCode, selection: $selection) { EmptyView() }
+//                CodeView(code: game.masterCode, selection: $selection) { Text("0.03").font(.title) }
+//                CodeView(code: game.masterCode, selection: $selection, ancillaryView:  { EmptyView() })
+                Divider()
+            }
             ScrollView {
-                if (!game.isOver) {
+                if (!game.isOver || restarting) {
                     VStack {
                         CodeView(code: game.guess, selection: $selection) {
                             guessButton
                         }
                         Divider()
-                    }.animation(nil, value: game.attempts.count)
+                    }
+                    .animation(nil, value: game.attempts.count)
+                    .opacity(restarting ? 0 : 1)
                 }
                 ForEach(game.attempts.indices.reversed(), id: \.self) { index in
                     VStack {
