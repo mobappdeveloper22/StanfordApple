@@ -8,26 +8,25 @@
 import SwiftUI
 
 struct CodeBreakerView: View {
+
+    // MARK: Data shared with me
+    @Binding var game : CodeBreaker
+
     
     // MARK: Data owned by me
-    @State private var game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
-    
+//    @State private var game = CodeBreaker(pegChoices: [.brown, .yellow, .orange, .black, .green])
+
     @State private var selection : Int = 0
     @State private var restarting : Bool = false
     @State private var hideMostRecentMarkers : Bool = false
     
     // MARK: - Body
     var body: some View {
+        
         VStack {
-            Button("Restart", systemImage: "arrow.circlepath", action: restart)
-
+            // Button("Restart", systemImage: "arrow.circlepath", action: restart)
             VStack {
-                CodeView(code: game.masterCode) {
-//                    ElapsedTime(startTime: game.startTime, endTime: game.endTime)
-//                        .flexibalSystemFont()
-//                        .monospaced()
-//                        .lineLimit(1)
-                }
+                CodeView(code: game.masterCode)
                 Divider()
             }
             ScrollView {
@@ -61,7 +60,20 @@ struct CodeBreakerView: View {
 //            PegChooser(choices: game.pegChoices) { peg in
 //                changePegAtSelection(to: peg)
 //            }
-        }.padding()
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button("Restart", systemImage: "arrow.circlepath", action: restart)
+            }
+            
+            ToolbarItem {
+                ElapsedTime(startTime: game.startTime, endTime: game.endTime)
+                    .monospaced()
+                    .lineLimit(1)
+                
+            }
+        }
+        .padding()
         
     }
     
@@ -96,10 +108,9 @@ struct CodeBreakerView: View {
     
 }
 
-
-
-
-
 #Preview {
-    CodeBreakerView()
+    @Previewable @State var game = CodeBreaker(name: "Preview", pegChoices: [.blue, .red, .orange])
+    NavigationStack {
+        CodeBreakerView(game: $game)
+    }
 }
