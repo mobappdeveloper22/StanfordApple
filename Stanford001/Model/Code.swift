@@ -12,6 +12,7 @@ extension Peg {
 }
 
 struct Code {
+    
     var kind : Kind
     var pegs : [Peg] = Array(repeating: .missing, count: 4)
     

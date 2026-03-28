@@ -23,10 +23,10 @@ struct CodeBreakerView: View {
 
             VStack {
                 CodeView(code: game.masterCode) {
-                    ElapsedTime(startTime: game.startTime, endTime: game.endTime)
-                        .flexibalSystemFont()
-                        .monospaced()
-                        .lineLimit(1)
+//                    ElapsedTime(startTime: game.startTime, endTime: game.endTime)
+//                        .flexibalSystemFont()
+//                        .monospaced()
+//                        .lineLimit(1)
                 }
                 Divider()
             }
@@ -41,11 +41,11 @@ struct CodeBreakerView: View {
                     .animation(nil, value: game.attempts.count)
                     .opacity(restarting ? 0 : 1)
                 }
-                ForEach(game.attempts.indices.reversed(), id: \.self) { index in
+                ForEach(game.attempts, id: \.pegs) { attempt in
                     VStack {
-                        CodeView(code: game.attempts[index]) {
-                            let showMarkers = !hideMostRecentMarkers || index != (game.attempts.count - 1)
-                            if showMarkers, let matches = game.attempts[index].matches {
+                        CodeView(code: attempt) {
+                            let showMarkers = !hideMostRecentMarkers || attempt.pegs != game.attempts.first?.pegs
+                            if showMarkers, let matches = attempt.matches {
                                 MatchMarkers(matches: matches)
                             }
                         }
