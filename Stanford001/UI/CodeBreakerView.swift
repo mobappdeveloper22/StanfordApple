@@ -22,14 +22,16 @@ struct CodeBreakerView: View {
             Button("Restart", systemImage: "arrow.circlepath", action: restart)
 
             VStack {
-                CodeView(code: game.masterCode)
-//                CodeView(code: game.masterCode, selection: $selection) { EmptyView() }
-//                CodeView(code: game.masterCode, selection: $selection) { Text("0.03").font(.title) }
-//                CodeView(code: game.masterCode, selection: $selection, ancillaryView:  { EmptyView() })
+                CodeView(code: game.masterCode) {
+                    ElapsedTime(startTime: game.startTime, endTime: game.endTime)
+                        .flexibalSystemFont()
+                        .monospaced()
+                        .lineLimit(1)
+                }
                 Divider()
             }
             ScrollView {
-                if (!game.isOver || restarting) {
+                if !game.isOver {
                     VStack {
                         CodeView(code: game.guess, selection: $selection) {
                             Button("Guess", action: guess).flexibalSystemFont()
@@ -70,11 +72,11 @@ struct CodeBreakerView: View {
     
     func restart() {
         withAnimation(.restart) {
-            restarting = true
+            restarting = game.isOver
+            game.restart()
+            selection = 0
         } completion: {
             withAnimation(.restart) {
-                game.restart()
-                selection = 0
                 restarting = false
             }
         }
