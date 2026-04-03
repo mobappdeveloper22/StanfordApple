@@ -27,6 +27,10 @@ struct GameList: View {
                     editButton(for: game) // editing game
                     deleteButton(for: game)
                 }
+                .swipeActions(edge: .leading) {
+                    editButton(for: game)
+                        .tint(.accentColor)
+                }
 //                    NavigationLink(value: game.masterCode.pegs) {
 //                        Text("Cheat")
 //                    }
