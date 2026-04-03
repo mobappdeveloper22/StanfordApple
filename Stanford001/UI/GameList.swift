@@ -15,8 +15,6 @@ struct GameList: View {
     // MARK: Data Owned by Me
     @State private var games : [CodeBreaker] = []
     
-    @State private var showGameEditor : Bool = false
-    
     @State private var gameToEdit : CodeBreaker?
     
     var body: some View {
@@ -64,16 +62,17 @@ struct GameList: View {
         }
     }
     
+    func editButton(for game : CodeBreaker) -> some View {
+        Button("Edit", systemImage: "pencil") {
+            gameToEdit = game
+        }
+    }
+
     var addButton : some View {
         Button("Add Button", systemImage: "plus") {
             gameToEdit = CodeBreaker(name: "New Game", pegChoices: [.purple, .gray])
         }
-        .onChange(of: gameToEdit) {
-            showGameEditor = gameToEdit != nil
-        }
-        .sheet(isPresented: $showGameEditor, onDismiss: {
-            gameToEdit = nil
-        }) {
+        .sheet(isPresented: showGameEditor) {
             gameEditor
         }
     }
@@ -92,11 +91,17 @@ struct GameList: View {
         }
     }
     
-    func editButton(for game : CodeBreaker) -> some View {
-        Button("Edit", systemImage: "pencil") {
-            gameToEdit = game
-        }
+    var showGameEditor : Binding<Bool> {
+        Binding<Bool>( get: {
+            gameToEdit != nil
+        }, set: { newValue in
+            if !newValue {
+                gameToEdit = nil
+            }
+            
+        })
     }
+    
     func deleteButton(for game : CodeBreaker) -> some View {
         Button("Delete", systemImage: "minus.circle", role: .destructive) {
             withAnimation {
