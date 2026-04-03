@@ -58,6 +58,7 @@ struct CodeBreakerView: View {
             if (!game.isOver) {
                 PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
                     .transition(.pegChooser)
+                    .frame(maxHeight: 90)
 //                    .transition(.move(edge: .bottom))
             }
 //            PegChooser(choices: game.pegChoices) { peg in
