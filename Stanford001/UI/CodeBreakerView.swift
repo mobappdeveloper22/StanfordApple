@@ -68,23 +68,7 @@ struct CodeBreakerView: View {
 //                changePegAtSelection(to: peg)
 //            }
         }
-        .onAppear {
-            game.startTimer()
-        }
-        .onDisappear {
-            game.pauseTimer()
-        }
-        .onChange(of: game) { oldGame, newGame in
-            oldGame.pauseTimer()
-            newGame.startTimer()
-        }
-        .onChange(of: scenePhase) {
-            switch scenePhase {
-            case .active: game.startTimer()
-            case .background: game.pauseTimer()
-            default: break
-            }
-        }
+        .trackElapsedTime(in: game)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Restart", systemImage: "arrow.circlepath", action: restart)
@@ -130,6 +114,39 @@ struct CodeBreakerView: View {
         }
     }
     
+}
+
+extension View {
+    func trackElapsedTime(in game: CodeBreaker) -> some View {
+        self.modifier(ElapsedTimeTracker(game: game))
+    }
+}
+
+struct ElapsedTimeTracker: ViewModifier {
+    
+    @Environment(\.scenePhase) var scenePhase
+    let game: CodeBreaker
+    
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                game.startTimer()
+            }
+            .onDisappear {
+                game.pauseTimer()
+            }
+            .onChange(of: game) { oldGame, newGame in
+                oldGame.pauseTimer()
+                newGame.startTimer()
+            }
+            .onChange(of: scenePhase) {
+                switch scenePhase {
+                case .active: game.startTimer()
+                case .background: game.pauseTimer()
+                default: break
+                }
+            }
+    }
 }
 
 #Preview {
