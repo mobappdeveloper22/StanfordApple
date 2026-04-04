@@ -15,12 +15,13 @@ extension Peg {
 @Model class Code {
     
     var _kind : String = Kind.unknown.description
-    
+    var pegs : [Peg]
+    var timestamp = Date.now
+
     var kind : Kind {
         get { return Kind(_kind) }
         set { _kind = newValue.description}
     }
-    var pegs : [Peg]
     
     static let missingPeg : Peg = ""
     

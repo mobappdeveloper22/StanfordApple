@@ -162,7 +162,7 @@ extension CodeBreaker {
     
 }
 
-#Preview {
+#Preview(traits: .swiftData) {
     @Previewable @State var game = CodeBreaker(name: "Preview", pegChoices: [.blue, .red, .orange])
     NavigationStack {
         CodeBreakerView(game: game)
