@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-enum Match {
+enum Match : String {
     case nomatch
     case exact
     case inexact

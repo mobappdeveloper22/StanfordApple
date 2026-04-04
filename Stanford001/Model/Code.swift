@@ -6,26 +6,30 @@
 //
 
 import SwiftUI
+import SwiftData
 
 extension Peg {
     static let missing = Color.clear
 }
 
-struct Code {
+@Model class Code {
     
-    var kind : Kind
-    var pegs : [Peg] = Array(repeating: .missing, count: 4)
+    var _kind : String = Kind.unknown.description
     
-    static let missingPeg : Peg = .missing
+    var kind : Kind {
+        get { return Kind(_kind) }
+        set { _kind = newValue.description}
+    }
+    var pegs : [Peg]
     
-    enum Kind : Equatable {
-        case master(isHidden : Bool)
-        case guess
-        case attempt([Match])
-        case uknown
+    static let missingPeg : Peg = ""
+    
+    init(kind: Kind, pegs: [Peg] = Array(repeating: Code.missingPeg, count: 4)) {
+        self.pegs = pegs
+        self.kind = kind
     }
     
-    mutating func randomize(from pegChoices : [Peg]) {
+    func randomize(from pegChoices : [Peg]) {
         for index in pegs.indices {
             pegs[index] = pegChoices.randomElement() ?? Code.missingPeg
         }
@@ -39,8 +43,8 @@ struct Code {
         }
     }
     
-    mutating func reset() {
-        pegs = Array(repeating: .missing, count: 4)
+    func reset() {
+        pegs = Array(repeating: Code.missingPeg, count: 4)
     }
     
     var matches:[Match]? {

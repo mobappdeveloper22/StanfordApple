@@ -31,10 +31,10 @@ struct PegChooser: View {
     }
 }
 
-//#Preview {
-//    
-//    PegChooser(choices: [Color.red, .blue, .green, .yellow]) { peg in
-//        print("chose \(peg)")
-//    }
-//    .padding()
-//}
+#Preview {
+    
+    PegChooser(choices: [Color.red, .blue, .green, .yellow].map(\.hex)) { peg in
+        print("chose \(peg)")
+    }
+    .padding()
+}

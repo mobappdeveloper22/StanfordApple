@@ -10,7 +10,7 @@ import SwiftUI
 struct PegChoicesChooser: View {
     
     // MARK: Data shared with me
-    @Binding var pegChoices : [Peg]
+    @Binding var pegChoices : [Color]
     
     var body: some View {
         List {
@@ -52,7 +52,7 @@ struct PegChoicesChooser: View {
 
 #Preview {
     
-    @Previewable @State var pegChoices: [Peg] = [.green, .orange]
+    @Previewable @State var pegChoices: [Color] = [.green, .orange]
     
     PegChoicesChooser(pegChoices: $pegChoices)
         .onChange(of: pegChoices) {
