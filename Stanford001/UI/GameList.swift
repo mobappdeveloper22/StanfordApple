@@ -16,7 +16,7 @@ struct GameList: View {
     // MARK: Data shared with me
     @Binding var selection: CodeBreaker?
     @Query private var games: [CodeBreaker]
-
+    
     // MARK: Data Owned by Me
     @State private var gameToEdit : CodeBreaker?
     
@@ -24,23 +24,27 @@ struct GameList: View {
         _selection = selection
         let lowercaseSearch = search.lowercased()
         let capitalizedSearch = search.capitalized
+        let completedOnly = sortBy == .completed
         let predicate = #Predicate<CodeBreaker> { game in
-            search.isEmpty || game.name.contains(lowercaseSearch) || game.name.contains(capitalizedSearch)
+            (!completedOnly || game.isOver) &&
+            (search.isEmpty || game.name.contains(lowercaseSearch) || game.name.contains(capitalizedSearch))
         }
         switch sortBy {
         case .name: _games = Query(filter: predicate, sort: \CodeBreaker.name)
-        case .recent: _games = Query(filter: predicate, sort: \CodeBreaker.lastAttemptDate, order: .reverse)
+        case .recent, .completed: _games = Query(filter: predicate, sort: \CodeBreaker.lastAttemptDate, order: .reverse)
         }
     }
     
     enum SortOption: CaseIterable {
         case name
         case recent
+        case completed
         
         var title: String {
             switch self {
             case .name: "Sort by Name"
             case .recent: "Recent"
+            case .completed: "Completed"
             }
         }
     }
@@ -59,9 +63,9 @@ struct GameList: View {
                     editButton(for: game)
                         .tint(.accentColor)
                 }
-//                    NavigationLink(value: game.masterCode.pegs) {
-//                        Text("Cheat")
-//                    }
+                //                    NavigationLink(value: game.masterCode.pegs) {
+                //                        Text("Cheat")
+                //                    }
             }
             .onDelete { offsets in
                 for offset in offsets {
@@ -74,15 +78,6 @@ struct GameList: View {
                 self.selection = nil
             }
         }
-// below code passed in detail because of ipad change (using NavigationSplitView)
-//            .navigationDestination(for: CodeBreaker.self) { game in
-//                CodeBreakerView(game: game)
-//                    .navigationTitle(game.name)
-//                    .navigationBarTitleDisplayMode(.inline)
-//            }
-//            .navigationDestination(for: [Peg].self) { pegs in
-//                PegChooser(choices: pegs)
-//            }
         .listStyle(.plain)
         .toolbar {
             addButton
@@ -98,7 +93,7 @@ struct GameList: View {
             gameToEdit = game
         }
     }
-
+    
     var addButton : some View {
         Button("Add Button", systemImage: "plus") {
             gameToEdit = CodeBreaker(name: "New Game", pegChoices: [.purple, .gray])

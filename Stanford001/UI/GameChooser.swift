@@ -27,6 +27,7 @@ struct GameChooser: View {
             GameList(sortBy: sortOption, nameContains: search, selection: $selection)
                 .navigationTitle("Code Breaker")
                 .searchable(text: $search)
+                .animation(.easeOut, value: search)
         } detail: {
             if let selection {
                 CodeBreakerView(game: selection)
