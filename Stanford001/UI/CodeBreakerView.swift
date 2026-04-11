@@ -11,6 +11,7 @@ struct CodeBreakerView: View {
     
     // MARK: Data In
     @Environment(\.scenePhase) var scenePhase
+    @Environment(\.sceneFrame) var sceneFrame
 
     // MARK: Data shared with me
     let game : CodeBreaker
@@ -58,12 +59,17 @@ struct CodeBreakerView: View {
                     }.transition(.attempt(game.isOver))
                 }
             }
-            if (!game.isOver) {
-                PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
-                    .transition(.pegChooser)
-                    .frame(maxHeight: 90)
-//                    .transition(.move(edge: .bottom))
+            GeometryReader { geometry in
+                if (!game.isOver) {
+                    let offset = sceneFrame.maxY - geometry.frame(in: .global).minY
+                    PegChooser(choices: game.pegChoices, onChoose: changePegAtSelection)
+                        .transition(.offset(x: 0, y: offset))
+                        .frame(maxHeight: 90)
+                    //                    .transition(.move(edge: .bottom))
+                }
             }
+            .aspectRatio(CGFloat(game.pegChoices.count), contentMode: .fit)
+            .frame(maxHeight: 90)
 //            PegChooser(choices: game.pegChoices) { peg in
 //                changePegAtSelection(to: peg)
 //            }
