@@ -34,6 +34,11 @@ typealias Peg = String
         masterCode.randomize(from: pegChoices)
     }
     
+    func updateElapsedTime() {
+        pauseTimer()
+        startTimer()
+    }
+    
     func startTimer() {
         if startTime == nil, !isOver {
             startTime = .now
