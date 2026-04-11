@@ -7,12 +7,22 @@
 
 import SwiftUI
 
-struct Diamond: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+struct Diamond: Shape {
+    func path(in rect: CGRect) -> Path {
+        return Path { path in
+            path.move(to: CGPoint(x: rect.midX, y: rect.minY))
+            path.addLine(to: CGPoint(x: rect.minX, y: rect.midY))
+            path.addLine(to: CGPoint(x: rect.midX, y: rect.maxY))
+            path.addLine(to: CGPoint(x: rect.maxX, y: rect.midY))
+            path.closeSubpath()
+        }
     }
+    
+    
 }
 
 #Preview {
     Diamond()
+        .stroke()
+        .aspectRatio(1, contentMode: .fit)
 }

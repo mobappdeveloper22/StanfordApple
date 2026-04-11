@@ -14,7 +14,7 @@ struct PegView: View {
     
     // MARK: - Body
 //    let pegShape = RoundedRectangle(cornerRadius: 10)
-    let pegShape = Circle()
+    let pegShape = Diamond()
     
     var body: some View {
         pegShape
