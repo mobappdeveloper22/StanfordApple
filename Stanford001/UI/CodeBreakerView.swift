@@ -74,10 +74,22 @@ struct CodeBreakerView: View {
 //                changePegAtSelection(to: peg)
 //            }
         }
+        .gesture(pegChoosingDial)
         .trackElapsedTime(in: game)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button("Restart", systemImage: "arrow.circlepath", action: restart)
+            }
+            
+            ToolbarItem {
+                Button("Save", systemImage: "square.and.arrow.down") {
+                    if let json = try? JSONEncoder().encode(game) {
+                        let url = FileManager.default.temporaryDirectory.appendingPathComponent(game.name)
+                            .appendingPathExtension("json")
+                        // print("url==\(url)")
+                        try? json.write(to: url)
+                    }
+                }
             }
             
             ToolbarItem {
@@ -89,6 +101,16 @@ struct CodeBreakerView: View {
         }
         .padding()
         
+    }
+    
+    var pegChoosingDial : some Gesture {
+        RotateGesture()
+            .onChanged { angle in
+                if (!(angle.rotation.degrees.isNaN)) {
+                    let petChoiceIndex = Int(Int(abs(angle.rotation.degrees / 90.0)) % game.pegChoices.count)
+                    game.guess.pegs[selection] = game.pegChoices[petChoiceIndex]
+                }
+            }
     }
     
     func changePegAtSelection(to peg : Peg) {

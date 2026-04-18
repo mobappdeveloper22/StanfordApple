@@ -91,8 +91,8 @@ struct GameList: View {
             addButton
             EditButton() // editing list of game
         }
-        .onAppear {
-            addSampleGames()
+        .task {
+            await addSampleGames()
         }
     }
     
@@ -155,13 +155,29 @@ struct GameList: View {
         }
     }
     
-    func addSampleGames() {
+    func addSampleGames() async {
         let fetchDescriptor = FetchDescriptor<CodeBreaker>()
         if let results = try? modelContext.fetchCount(fetchDescriptor), results == 0 {
-            modelContext.insert(CodeBreaker(name: "Mastermind", pegChoices: [.red, .blue, .green, .yellow]))
-            modelContext.insert(CodeBreaker(name: "Earth Tones", pegChoices: [.orange, .brown, .black, .yellow, .green]))
-            modelContext.insert(CodeBreaker(name: "Undesea", pegChoices: [.blue, .indigo, .cyan]))
+            for url in sampleGameURLs {
+                do {
+                    let (json, _) = try await URLSession.shared.data(from: url)
+                    let game = try JSONDecoder().decode(CodeBreaker.self, from: json)
+                    modelContext.insert(game)
+                    print("loaded game from url: \(url)")
+                } catch {
+                    print("could not loan sample json from file at url: \(url) : \(error.localizedDescription)")
+                }
+            }
+            
+            //            modelContext.insert(CodeBreaker(name: "Mastermind", pegChoices: [.red, .blue, .green, .yellow]))
+            //            modelContext.insert(CodeBreaker(name: "Earth Tones", pegChoices: [.orange, .brown, .black, .yellow, .green]))
+            //            modelContext.insert(CodeBreaker(name: "Undesea", pegChoices: [.blue, .indigo, .cyan]))
         }
+    }
+    
+    var sampleGameURLs : [URL] {
+        Bundle.main.paths(forResourcesOfType: "json", inDirectory: nil)
+            .map { URL(fileURLWithPath: $0) }
     }
 }
 
