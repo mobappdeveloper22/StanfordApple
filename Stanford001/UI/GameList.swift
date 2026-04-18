@@ -49,11 +49,18 @@ struct GameList: View {
         }
     }
     
+    var summarySize : GameSummary.Size {
+        staticSummarySize * dynamicSummarySizeMagnification
+    }
+    
+    @State private var staticSummarySize : GameSummary.Size = .large
+    @State private var dynamicSummarySizeMagnification : CGFloat = 1.0
+    
     var body: some View {
         List(selection: $selection) {
             ForEach(games) { game in
                 NavigationLink(value: game) {
-                    GameSummary(game: game)
+                    GameSummary(game: game, size: summarySize)
                 }
                 .contextMenu {
                     editButton(for: game) // editing game
@@ -73,6 +80,7 @@ struct GameList: View {
                 }
             }
         }
+        .gesture(summySizeMagnifier)
         .onChange(of: games) {
             if let selection, !games.contains(selection) {
                 self.selection = nil
@@ -86,6 +94,18 @@ struct GameList: View {
         .onAppear {
             addSampleGames()
         }
+    }
+    
+    var summySizeMagnifier : some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                dynamicSummarySizeMagnification = value.magnification
+            }
+            .onEnded { value in
+                staticSummarySize = staticSummarySize * value.magnification
+                dynamicSummarySizeMagnification = 1.0
+            }
+        
     }
     
     func editButton(for game : CodeBreaker) -> some View {
@@ -143,6 +163,20 @@ struct GameList: View {
             modelContext.insert(CodeBreaker(name: "Undesea", pegChoices: [.blue, .indigo, .cyan]))
         }
     }
+}
+
+extension GameSummary.Size {
+    
+    static func *(lhs: Self, rhs: CGFloat) -> Self {
+        switch rhs {
+        case 2.0...: lhs.larger.larger
+        case 1.5...: lhs.larger
+        case ...0.35: lhs.smaller.smaller
+        case ...0.5: lhs.smaller
+        default: lhs
+        }
+    }
+    
 }
 
 #Preview(traits: .swiftData) {

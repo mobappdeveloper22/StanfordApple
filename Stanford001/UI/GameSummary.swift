@@ -11,16 +11,41 @@ struct GameSummary: View {
     
     var game: CodeBreaker
     
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(game.name)
-                .font(.title)
-            PegChooser(choices: game.pegChoices)
-                .frame(maxHeight: 50)
-            Text("^[\(game.attempts.count) attempt](inflect: true)")
+    var size: Size = .compact
+    
+    enum Size {
+        case compact
+        case regular
+        case large
+        
+        var larger : Size {
+            switch self {
+                case .compact : .regular
+                default: .large
+            }
         }
-        //            .listRowSeparator(.hidden)
-        //            .listRowBackground(RoundedRectangle(cornerRadius: 10).foregroundStyle(.yellow).padding(5))
+
+        var smaller : Size {
+            switch self {
+                case .large : .regular
+                default: .compact
+            }
+        }
+    }
+    
+    var body: some View {
+        
+        let changingLayout = size == .compact ? AnyLayout(HStackLayout()) : AnyLayout(VStackLayout(alignment: .leading))
+        
+        changingLayout {
+            Text(game.name)
+                .font(size == .compact ? .body : .title)
+            PegChooser(choices: game.pegChoices)
+                .frame(maxHeight: size == .compact ? 35 : 50)
+            if (size == .large) {
+                Text("^[\(game.attempts.count) attempt](inflect: true)")
+            }
+        }
     }
 }
 
