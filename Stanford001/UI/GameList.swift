@@ -17,11 +17,15 @@ struct GameList: View {
     @Binding var selection: CodeBreaker?
     @Query private var games: [CodeBreaker]
     
+    @Binding var sizeBy: SizeOption
+    
     // MARK: Data Owned by Me
     @State private var gameToEdit : CodeBreaker?
     
-    init(sortBy: SortOption = .name, nameContains search: String = "", selection: Binding<CodeBreaker?>) {
+    init(sortBy: SortOption = .name, sizeBy: Binding<SizeOption>, nameContains search: String = "", selection: Binding<CodeBreaker?>) {
+        print("init===sortBy: \(sortBy), sizeBy: \(sizeBy), nameContains: \(search)")
         _selection = selection
+        _sizeBy = sizeBy
         let lowercaseSearch = search.lowercased()
         let capitalizedSearch = search.capitalized
         let completedOnly = sortBy == .completed
@@ -49,8 +53,23 @@ struct GameList: View {
         }
     }
     
+    enum SizeOption: CaseIterable {
+        case compact
+        case regular
+        case large
+        
+        var title: String {
+            switch self {
+            case .compact: "Compact"
+            case .regular: "Regular"
+            case .large: "Large"
+            }
+        }
+    }
+    
     var summarySize : GameSummary.Size {
-        staticSummarySize * dynamicSummarySizeMagnification
+        print("summarySize==\(staticSummarySize) * \(dynamicSummarySizeMagnification)==\(staticSummarySize * dynamicSummarySizeMagnification)")
+        return staticSummarySize * dynamicSummarySizeMagnification
     }
     
     @State private var staticSummarySize : GameSummary.Size = .large
@@ -80,6 +99,18 @@ struct GameList: View {
                 }
             }
         }
+        .onChange(of: sizeBy) { oldValue, newValue in
+            switch newValue {
+            case .compact:
+                staticSummarySize = .compact
+            case .regular:
+                staticSummarySize = .regular
+            case .large:
+                staticSummarySize = .large
+            }
+            
+            dynamicSummarySizeMagnification = 1.0
+        }
         .gesture(summySizeMagnifier)
         .onChange(of: games) {
             if let selection, !games.contains(selection) {
@@ -99,11 +130,22 @@ struct GameList: View {
     var summySizeMagnifier : some Gesture {
         MagnifyGesture()
             .onChanged { value in
+                print("onChanged==\(value.magnification)")
                 dynamicSummarySizeMagnification = value.magnification
             }
             .onEnded { value in
+                print("onEnded==\(value.magnification)")
                 staticSummarySize = staticSummarySize * value.magnification
                 dynamicSummarySizeMagnification = 1.0
+                
+                sizeBy = {
+                    switch staticSummarySize {
+                    case .compact: return .compact
+                    case .regular: return .regular
+                    case .large: return .large
+                    default: return .regular
+                    }
+                }()
             }
         
     }
@@ -198,7 +240,9 @@ extension GameSummary.Size {
 #Preview(traits: .swiftData) {
     
     @Previewable @State var selection: CodeBreaker?
+    @Previewable @State var sizeOption: GameList.SizeOption = .large
+
     NavigationStack {
-        GameList(selection: $selection)
+        GameList(sizeBy: $sizeOption, selection: $selection)
     }
 }

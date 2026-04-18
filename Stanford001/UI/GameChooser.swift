@@ -13,6 +13,7 @@ struct GameChooser: View {
     @State private var selection: CodeBreaker? = nil
 
     @State private var sortOption: GameList.SortOption = .name
+    @State private var sizeOption: GameList.SizeOption = .large
     @State private var search: String = ""
     
     var body: some View {
@@ -24,7 +25,16 @@ struct GameChooser: View {
             }
             .pickerStyle(.segmented)
             .padding(.horizontal)
-            GameList(sortBy: sortOption, nameContains: search, selection: $selection)
+            
+            Picker("Size Sorting", selection: $sizeOption.animation(.default)) {
+                ForEach(GameList.SizeOption.allCases, id: \.self) { option in
+                    Text(option.title)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            
+            GameList(sortBy: sortOption, sizeBy: $sizeOption, nameContains: search, selection: $selection)
                 .navigationTitle("Code Breaker")
                 .searchable(text: $search)
                 .animation(.easeOut, value: search)
